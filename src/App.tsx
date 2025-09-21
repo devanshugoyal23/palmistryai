@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import HowItWorks from './components/HowItWorks';
 import SampleCards from './components/SampleCards';
 import Features from './components/Features';
+import TrendingChallenges from './components/TrendingChallenges';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
@@ -23,6 +24,7 @@ function App() {
               <HowItWorks />
               <SampleCards />
               <Features />
+              <TrendingChallenges />
               <Testimonials />
               <CTA />
               <Footer />

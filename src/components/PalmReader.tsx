@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Users } from 'lucide-react';
+import { ArrowLeft, Users, Brain, Sparkles } from 'lucide-react';
 import PalmUpload from './PalmUpload';
 import ToneSelector from './ToneSelector';
 import ReadingResult from './ReadingResult';
 import CompatibilityMode from './CompatibilityMode';
+import AIVisualization from './AIVisualization';
+import AIInsights from './AIInsights';
 import { usePalmReading } from '../hooks/usePalmReading';
 import { PalmReading } from '../types';
 
 export default function PalmReader() {
   const [selectedTone, setSelectedTone] = useState<PalmReading['tone']>('funny');
   const [mode, setMode] = useState<'single' | 'compatibility'>('single');
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const { isAnalyzing, currentReading, error, analyzeImage, clearReading } = usePalmReading();
 
   const handleImageSelect = async (file: File) => {
     try {
+      setUploadedImage(URL.createObjectURL(file));
       await analyzeImage(file, selectedTone);
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -22,6 +26,7 @@ export default function PalmReader() {
 
   const handleNewReading = () => {
     clearReading();
+    setUploadedImage(null);
   };
 
   if (currentReading) {
@@ -48,11 +53,17 @@ export default function PalmReader() {
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
             <span className="bg-gradient-to-r from-yellow-400 to-purple-400 bg-clip-text text-transparent">
-              Palm Reading
+              AI Palm Reading
             </span>
             <br />
             <span className="text-white">Experience</span>
           </h1>
+          
+          <div className="flex items-center justify-center space-x-2 mb-8">
+            <Brain className="w-6 h-6 text-purple-400" />
+            <span className="text-purple-200">Powered by Advanced AI</span>
+            <Sparkles className="w-6 h-6 text-yellow-400" />
+          </div>
           
           <div className="flex justify-center gap-4 mb-8">
             <button
@@ -85,9 +96,19 @@ export default function PalmReader() {
           <div className="max-w-4xl mx-auto">
             <ToneSelector selectedTone={selectedTone} onToneChange={setSelectedTone} />
             
-            <div className="text-center mb-8">
-              <PalmUpload onImageSelect={handleImageSelect} isAnalyzing={isAnalyzing} />
-            </div>
+            {uploadedImage ? (
+              <div className="mb-8">
+                <AIVisualization 
+                  imageUrl={uploadedImage} 
+                  isAnalyzing={isAnalyzing}
+                  palmLines={null}
+                />
+              </div>
+            ) : (
+              <div className="text-center mb-8">
+                <PalmUpload onImageSelect={handleImageSelect} isAnalyzing={isAnalyzing} />
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-900/30 border border-red-500/50 text-red-200 p-4 rounded-lg text-center mb-8">
@@ -97,10 +118,10 @@ export default function PalmReader() {
 
             <div className="text-center">
               <p className="text-purple-200 mb-4">
-                📸 Take a clear photo of your palm in good lighting
+                🤖 AI analyzes your palm lines in real-time
               </p>
               <p className="text-purple-300 text-sm">
-                Your image is processed locally and not stored on our servers
+                Advanced computer vision + Gemini AI for accurate readings
               </p>
             </div>
           </div>

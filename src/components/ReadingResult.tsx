@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Share2, Download, Heart, Briefcase, Star, Zap, Copy } from 'lucide-react';
 import { PalmReading } from '../types';
 import { generateShareCard } from '../utils/cardGenerator';
+import SocialFeatures from './SocialFeatures';
+import AIInsights from './AIInsights';
 
 interface ReadingResultProps {
   reading: PalmReading;
@@ -10,6 +12,7 @@ interface ReadingResultProps {
 
 export default function ReadingResult({ reading, onNewReading }: ReadingResultProps) {
   const [activeTab, setActiveTab] = useState<'love' | 'career' | 'personality' | 'future'>('love');
+  const [activeSection, setActiveSection] = useState<'reading' | 'insights' | 'social'>('reading');
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 
   const tabs = [
@@ -41,6 +44,11 @@ export default function ReadingResult({ reading, onNewReading }: ReadingResultPr
     navigator.clipboard.writeText(text);
   };
 
+  const handleShare = (platform: string) => {
+    // Implement platform-specific sharing
+    console.log(`Sharing to ${platform}`);
+  };
+
   const getActiveContent = () => {
     switch (activeTab) {
       case 'love':
@@ -64,7 +72,7 @@ export default function ReadingResult({ reading, onNewReading }: ReadingResultPr
       {/* Header */}
       <div className="text-center mb-8">
         <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-          Your Palm Reading is Ready! ✨
+          Your AI Palm Reading is Ready! 🤖✨
         </h2>
         <p className="text-purple-200 text-lg">
           Generated with {reading.tone} vibes • {reading.timestamp.toLocaleDateString()}
@@ -83,6 +91,38 @@ export default function ReadingResult({ reading, onNewReading }: ReadingResultPr
         </div>
       </div>
 
+      {/* Section Selector */}
+      <div className="flex justify-center gap-2 mb-8">
+        {[
+          { id: 'reading', name: 'Reading', emoji: '🔮' },
+          { id: 'insights', name: 'AI Insights', emoji: '🧠' },
+          { id: 'social', name: 'Share', emoji: '🚀' }
+        ].map((section) => (
+          <button
+            key={section.id}
+            onClick={() => setActiveSection(section.id as any)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all ${
+              activeSection === section.id
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black'
+                : 'bg-purple-900/30 text-purple-200 hover:bg-purple-800/40'
+            }`}
+          >
+            <span>{section.emoji}</span>
+            <span className="font-semibold">{section.name}</span>
+          </button>
+        ))}
+      </div>
+
+      {activeSection === 'insights' && (
+        <AIInsights reading={reading} />
+      )}
+
+      {activeSection === 'social' && (
+        <SocialFeatures reading={reading} onShare={handleShare} />
+      )}
+
+      {activeSection === 'reading' && (
+        <>
       {/* Tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {tabs.map((tab) => {
@@ -161,6 +201,8 @@ export default function ReadingResult({ reading, onNewReading }: ReadingResultPr
           )}
         </div>
       </div>
+        </>
+      )}
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
